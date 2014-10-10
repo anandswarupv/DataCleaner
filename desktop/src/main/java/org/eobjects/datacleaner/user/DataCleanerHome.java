@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -24,18 +24,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
+import org.apache.metamodel.util.FileHelper;
 import org.eobjects.analyzer.util.ClassLoaderUtils;
 import org.eobjects.analyzer.util.StringUtils;
 import org.eobjects.analyzer.util.VFSUtils;
 import org.eobjects.datacleaner.Version;
 import org.eobjects.datacleaner.util.ResourceManager;
 import org.eobjects.datacleaner.util.SystemProperties;
-import org.apache.metamodel.util.FileHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,18 +51,26 @@ import org.slf4j.LoggerFactory;
  * will be used.</li>
  * <li>If none of the above, the current folder "." will be used.</li>
  * </ol>
- * 
- * @author Kasper Sørensen
  */
 public final class DataCleanerHome {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataCleanerHome.class);
+    // note: Logger is specified using a string. This is because the logger is
+    // to be used also in the static initializer and any error in that code
+    // would otherwise be swallowed.
+    private static final Logger logger;
+
     private static final FileObject _dataCleanerHome;
 
     static {
+        logger = LoggerFactory.getLogger("org.eobjects.datacleaner.user.DataCleanerHome");
+        logger.info("Initializing DATACLEANER_HOME");
         try {
             _dataCleanerHome = findDataCleanerHome();
-        } catch (FileSystemException e) {
+        } catch (Exception e) {
+            logger.error("Failed to initialize DATACLEANER_HOME!", e);
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            }
             throw new IllegalStateException(e);
         }
     }
@@ -82,12 +92,7 @@ public final class DataCleanerHome {
 
         if (ClassLoaderUtils.IS_WEB_START) {
             // in web start, the default folder will be in user.home
-            final String userHomePath = System.getProperty("user.home");
-            if (userHomePath == null) {
-                throw new IllegalStateException("Could not determine user home directory: " + candidate);
-            }
-
-            final String path = userHomePath + File.separatorChar + ".datacleaner" + File.separatorChar + Version.getVersion();
+            final String path = getUserHomeCandidatePath();
             candidate = manager.resolveFile(path);
             logger.info("Running in WebStart mode. Attempting to build DATACLEANER_HOME in user.home: {} -> {}", path,
                     candidate);
@@ -95,7 +100,16 @@ public final class DataCleanerHome {
             // in normal mode, the default folder will be in the working
             // directory
             candidate = manager.resolveFile(".");
-            logger.info("Running in standard mode. Attempting to build DATACLEANER_HOME in '.' -> {}", candidate);
+            if (isWriteable(candidate)) {
+                logger.info("Running in standard mode. Attempting to build DATACLEANER_HOME in '.' -> {}", candidate);
+            } else {
+                final String path = getUserHomeCandidatePath();
+                candidate = manager.resolveFile(path);
+                logger.info(
+                        "Application directory is not writeable. Attempting to build DATACLEANER_HOME in user.home: {} -> {}",
+                        path, candidate);
+            }
+
         }
 
         if ("true".equalsIgnoreCase(System.getProperty(SystemProperties.SANDBOX))) {
@@ -113,19 +127,38 @@ public final class DataCleanerHome {
                 candidate.createFolder();
             }
 
-            if (candidate.isWriteable()) {
+            if (isWriteable(candidate)) {
                 logger.debug("Copying default configuration and examples to DATACLEANER_HOME directory: {}", candidate);
                 copyIfNonExisting(candidate, manager, "conf.xml");
-                copyIfNonExisting(candidate, manager, "examples/countrycodes.csv");
-                copyIfNonExisting(candidate, manager, "examples/employees.analysis.xml");
-                copyIfNonExisting(candidate, manager, "examples/duplicate_customer_detection.analysis.xml");
-                copyIfNonExisting(candidate, manager, "examples/customer_data_cleansing.analysis.xml");
-                copyIfNonExisting(candidate, manager, "examples/write_order_information.analysis.xml");
-                copyIfNonExisting(candidate, manager, "examples/customer_data_completeness.analysis.xml");
+                copyIfNonExisting(candidate, manager, DemoConfiguration.DATASTORE_FILE_CONTACTDATA);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_EXPORT_ORDERS_DATA);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_CUSTOMER_PROFILING);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_ADDRESS_CLEANSING);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_PHONE_CLEANSING);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_SFDC_DUPLICATE_DETECTION);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_SFDC_DUPLICATE_TRAINING);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.OTHER_DEDUP_MODEL_SFDC_USERS);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_ORDERDB_DUPLICATE_DETECTION);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_ORDERDB_DUPLICATE_TRAINING);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.OTHER_DEDUP_MODEL_ORDERDB_CUSTOMERS);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.OTHER_DEDUP_REFERENCE_ORDERDB_CUSTOMERS);
+                copyIfNonExisting(candidate, manager, DemoConfiguration.JOB_COPY_EMPLOYEES_TO_CUSTOMERS);
             }
         }
 
         return candidate;
+    }
+
+    private static boolean isWriteable(FileObject candidate) throws FileSystemException {
+        if (!candidate.isWriteable()) {
+            return false;
+        }
+
+        // check with java.nio.Files.isWriteable() - is more detailed in it's
+        // check
+        final File file = VFSUtils.toFile(candidate);
+        final Path path = file.toPath();
+        return Files.isWritable(path);
     }
 
     /**
@@ -135,12 +168,12 @@ public final class DataCleanerHome {
         return _dataCleanerHome;
     }
 
-    private static void copyIfNonExisting(FileObject candidate, FileSystemManager manager, String filename)
+    private static FileObject copyIfNonExisting(FileObject candidate, FileSystemManager manager, String filename)
             throws FileSystemException {
         FileObject file = candidate.resolveFile(filename);
         if (file.exists()) {
             logger.info("File already exists in DATACLEANER_HOME: " + filename);
-            return;
+            return file;
         }
         FileObject parentFile = file.getParent();
         if (!parentFile.exists()) {
@@ -149,6 +182,9 @@ public final class DataCleanerHome {
 
         final ResourceManager resourceManager = ResourceManager.get();
         final URL url = resourceManager.getUrl("datacleaner-home/" + filename);
+        if (url == null) {
+            return null;
+        }
 
         InputStream in = null;
         OutputStream out = null;
@@ -162,6 +198,15 @@ public final class DataCleanerHome {
         } finally {
             FileHelper.safeClose(in, out);
         }
+
+        return file;
+    }
+
+    private static String getUserHomeCandidatePath() {
+        final String userHomePath = System.getProperty("user.home");
+        final String path = userHomePath + File.separatorChar + ".datacleaner" + File.separatorChar
+                + Version.getVersion();
+        return path;
     }
 
     private static boolean isUsable(FileObject candidate) throws FileSystemException {

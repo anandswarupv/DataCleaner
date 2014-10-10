@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -48,6 +49,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
 
 /**
  * Panel that shows various progress information widgets within the
@@ -122,9 +124,19 @@ public class ProgressInformationPanel extends DCPanel {
             stringWriter.append("(No stack trace provided)");
         } else {
             throwable = ErrorUtils.unwrapForPresentation(throwable);
+            
+            final String exceptionMessage = throwable.getMessage();
+            if (!Strings.isNullOrEmpty(exceptionMessage)) {
+                stringWriter.append('\n');
+                stringWriter.append('\n');
+                stringWriter.append(exceptionMessage);
+            }
+            
+            stringWriter.append('\n');
             stringWriter.append('\n');
             PrintWriter printWriter = new PrintWriter(stringWriter);
             printStackTrace(printWriter, throwable);
+            stringWriter.append('\n');
         }
         appendMessage(stringWriter.toString());
 
@@ -231,8 +243,13 @@ public class ProgressInformationPanel extends DCPanel {
             log = false;
         }
         if (log) {
-            addUserLog("Progress of " + table.getName() + ": " + currentRow + " rows processed");
+            addUserLog("Progress of " + table.getName() + ": " + formatNumber(currentRow) + " rows processed");
         }
+    }
+
+    private String formatNumber(int number) {
+        NumberFormat nf = NumberFormat.getInstance();
+        return nf.format(number);
     }
 
     public void onCancelled() {
@@ -264,6 +281,7 @@ public class ProgressInformationPanel extends DCPanel {
 
         Collection<TableProgressInformationPanel> tableProgressInformationPanels = _tableProgressInformationPanels
                 .values();
+        
         for (TableProgressInformationPanel tableProgressInformationPanel : tableProgressInformationPanels) {
             tableProgressInformationPanel.setProgressFinished();
         }

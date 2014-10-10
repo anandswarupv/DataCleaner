@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import javax.swing.Box;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.metamodel.schema.Column;
+import org.apache.metamodel.schema.Table;
 import org.eobjects.analyzer.data.InputColumn;
 import org.eobjects.analyzer.data.MetaModelInputColumn;
 import org.eobjects.analyzer.job.builder.AnalysisJobBuilder;
@@ -37,14 +39,10 @@ import org.eobjects.datacleaner.util.IconUtils;
 import org.eobjects.datacleaner.util.ImageManager;
 import org.eobjects.datacleaner.util.WidgetUtils;
 import org.eobjects.datacleaner.widgets.DCLabel;
-import org.apache.metamodel.schema.Column;
-import org.apache.metamodel.schema.Table;
 import org.jdesktop.swingx.VerticalLayout;
 
 /**
  * Panel that presents the source columns of a job.
- * 
- * @author Kasper Sørensen
  */
 public final class SourceColumnsPanel extends DCPanel implements SourceColumnChangeListener {
 
@@ -58,7 +56,7 @@ public final class SourceColumnsPanel extends DCPanel implements SourceColumnCha
 
     @Inject
     protected SourceColumnsPanel(AnalysisJobBuilder analysisJobBuilder, WindowContext windowContext) {
-        super();
+        super(ImageManager.get().getImage("images/window/source-tab-background.png"), 0, 100);
         _analysisJobBuilder = analysisJobBuilder;
         _windowContext = windowContext;
 
@@ -71,7 +69,6 @@ public final class SourceColumnsPanel extends DCPanel implements SourceColumnCha
         _hintLabel.setIconTextGap(20);
         _hintLabel.setIcon(ImageManager.get().getImageIcon(IconUtils.MODEL_COLUMN));
 
-        _analysisJobBuilder.getSourceColumnListeners().add(this);
         setBorder(WidgetUtils.BORDER_EMPTY);
         setLayout(new VerticalLayout(4));
 
@@ -156,6 +153,12 @@ public final class SourceColumnsPanel extends DCPanel implements SourceColumnCha
     public void removeNotify() {
         _analysisJobBuilder.getSourceColumnListeners().remove(this);
         super.removeNotify();
+    }
+    
+    @Override
+    public void addNotify() {
+        _analysisJobBuilder.getSourceColumnListeners().add(this);
+        super.addNotify();
     }
 
     public MaxRowsFilterShortcutPanel getMaxRowsFilterShortcutPanel() {

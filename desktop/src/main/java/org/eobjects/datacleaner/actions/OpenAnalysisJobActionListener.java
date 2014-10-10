@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -29,26 +29,33 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.metamodel.util.FileHelper;
 import org.eobjects.analyzer.configuration.AnalyzerBeansConfiguration;
 import org.eobjects.analyzer.job.AnalysisJobMetadata;
+import org.eobjects.analyzer.job.ComponentConfigurationException;
 import org.eobjects.analyzer.job.JaxbJobReader;
+import org.eobjects.analyzer.job.NoSuchComponentException;
 import org.eobjects.analyzer.job.NoSuchDatastoreException;
 import org.eobjects.analyzer.job.builder.AnalysisJobBuilder;
 import org.eobjects.analyzer.result.AnalysisResult;
 import org.eobjects.analyzer.util.ChangeAwareObjectInputStream;
 import org.eobjects.analyzer.util.VFSUtils;
+import org.eobjects.datacleaner.Version;
 import org.eobjects.datacleaner.bootstrap.WindowContext;
 import org.eobjects.datacleaner.guice.DCModule;
 import org.eobjects.datacleaner.user.ExtensionPackage;
 import org.eobjects.datacleaner.user.UserPreferences;
 import org.eobjects.datacleaner.util.FileFilters;
+import org.eobjects.datacleaner.util.WidgetUtils;
 import org.eobjects.datacleaner.widgets.DCFileChooser;
 import org.eobjects.datacleaner.widgets.OpenAnalysisJobFileChooserAccessory;
 import org.eobjects.datacleaner.windows.AnalysisJobBuilderWindow;
 import org.eobjects.datacleaner.windows.OpenAnalysisJobAsTemplateDialog;
 import org.eobjects.datacleaner.windows.ResultWindow;
-import org.apache.metamodel.util.FileHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Providers;
@@ -59,10 +66,10 @@ import com.google.inject.util.Providers;
  * 
  * The class also contains a few reusable static methods for opening job files
  * without showing the dialog.
- * 
- * @author Kasper Sørensen
  */
 public class OpenAnalysisJobActionListener implements ActionListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(OpenAnalysisJobActionListener.class);
 
     private final AnalyzerBeansConfiguration _configuration;
     private final AnalysisJobBuilderWindow _parentWindow;
@@ -112,7 +119,13 @@ public class OpenAnalysisJobActionListener implements ActionListener {
         if (file.getName().getBaseName().endsWith(FileFilters.ANALYSIS_RESULT_SER.getExtension())) {
             openAnalysisResult(file, _parentModule);
         } else {
-            Injector injector = openAnalysisJob(file);
+            final Injector injector = openAnalysisJob(file);
+            if (injector == null) {
+                // this may happen, in which case the error was signalled to the
+                // user already
+                return;
+            }
+
             final AnalysisJobBuilderWindow window = injector.getInstance(AnalysisJobBuilderWindow.class);
             window.open();
 
@@ -175,6 +188,20 @@ public class OpenAnalysisJobActionListener implements ActionListener {
             AnalysisJobBuilder ajb = reader.create(file);
 
             return openAnalysisJob(file, ajb);
+        } catch (NoSuchComponentException e) {
+            final String message;
+            if (Version.EDITION_COMMUNITY.equals(Version.getEdition())) {
+                message = "<html><p>Failed to open job because of a missing component:</p><pre>"
+                        + e.getMessage()
+                        + "</pre>"
+                        + "<p>This may happen if the job requires a <a href=\"http://datacleaner.org/editions\">Commercial Edition of DataCleaner</a>, or an extension that you do not have installed.</p></html>";
+            } else {
+                message = "<html>Failed to open job because of a missing component: " + e.getMessage() + "<br/><br/>"
+                        + "This may happen if the job requires an extension that you do not have installed.</html>";
+            }
+            WidgetUtils.showErrorMessage("Cannot open job", message);
+
+            return null;
         } catch (NoSuchDatastoreException e) {
             if (_windowContext == null) {
                 // This can happen in case of single-datastore + job file
@@ -182,8 +209,8 @@ public class OpenAnalysisJobActionListener implements ActionListener {
                 throw e;
             }
 
-            AnalysisJobMetadata metadata = reader.readMetadata(file);
-            int result = JOptionPane.showConfirmDialog(null, e.getMessage()
+            final AnalysisJobMetadata metadata = reader.readMetadata(file);
+            final int result = JOptionPane.showConfirmDialog(null, e.getMessage()
                     + "\n\nDo you wish to open this job as a template?", "Error: " + e.getMessage(),
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
             if (result == JOptionPane.OK_OPTION) {
@@ -192,6 +219,27 @@ public class OpenAnalysisJobActionListener implements ActionListener {
                 dialog.setVisible(true);
             }
             return null;
+        } catch (ComponentConfigurationException e) {
+            final String message;
+            final Throwable cause = e.getCause();
+            if (cause != null) {
+                // check for causes of the mis-configuration. If there's a cause
+                // with a message, then show the message first and foremost
+                // (usually a validation error).
+                if (!Strings.isNullOrEmpty(cause.getMessage())) {
+                    message = cause.getMessage();
+                } else {
+                    message = e.getMessage();
+                }
+            } else {
+                message = e.getMessage();
+            }
+
+            WidgetUtils.showErrorMessage("Failed to validate job configuration", message, e);
+            return null;
+        } catch (RuntimeException e) {
+            logger.error("Unexpected failure when opening job: {}", file, e);
+            throw e;
         }
     }
 

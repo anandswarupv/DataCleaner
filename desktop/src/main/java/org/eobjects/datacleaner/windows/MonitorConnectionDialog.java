@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -307,7 +307,7 @@ public class MonitorConnectionDialog extends AbstractDialog {
                     } else {
                         final String reasonPhrase = statusLine.getReasonPhrase();
                         WidgetUtils.showErrorMessage("Server reported error", "Server replied with status "
-                                + statusLine.getStatusCode() + ":\n" + reasonPhrase, null);
+                                + statusLine.getStatusCode() + ":\n" + reasonPhrase);
                     }
                 } catch (Exception e) {
                     // TODO: This dialog is shown behind the modal dialog

@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -62,7 +62,7 @@ import org.eobjects.datacleaner.widgets.DCLabel;
 import org.eobjects.datacleaner.widgets.FileSelectionListener;
 import org.eobjects.datacleaner.widgets.FilenameTextField;
 import org.eobjects.datacleaner.widgets.HelpIcon;
-import org.eobjects.datacleaner.widgets.HumanInferenceToolbarButton;
+import org.eobjects.datacleaner.widgets.NeopostToolbarButton;
 import org.eobjects.datacleaner.widgets.tabs.CloseableTabbedPane;
 import org.eobjects.datacleaner.widgets.tabs.Tab;
 import org.apache.metamodel.util.Func;
@@ -411,7 +411,7 @@ public class OptionsDialog extends AbstractWindow {
         });
 
         final JToolBar toolBar = WidgetFactory.createToolBar();
-        toolBar.add(new HumanInferenceToolbarButton());
+        toolBar.add(new NeopostToolbarButton());
         toolBar.add(WidgetFactory.createToolBarSeparator());
         toolBar.add(closeButton);
 

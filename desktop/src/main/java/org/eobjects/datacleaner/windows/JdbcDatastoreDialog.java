@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -59,7 +59,7 @@ import org.eobjects.datacleaner.widgets.DCComboBox.Listener;
 import org.eobjects.datacleaner.widgets.DCLabel;
 import org.eobjects.datacleaner.widgets.DCListCellRenderer;
 import org.eobjects.datacleaner.widgets.DescriptionLabel;
-import org.eobjects.datacleaner.widgets.HumanInferenceToolbarButton;
+import org.eobjects.datacleaner.widgets.NeopostToolbarButton;
 import org.eobjects.datacleaner.widgets.database.CubridDatabaseConnectionPresenter;
 import org.eobjects.datacleaner.widgets.database.DatabaseConnectionPresenter;
 import org.eobjects.datacleaner.widgets.database.DefaultDatabaseConnectionPresenter;
@@ -387,7 +387,7 @@ public class JdbcDatastoreDialog extends AbstractDialog {
         });
 
         final JToolBar toolBar = WidgetFactory.createToolBar();
-        toolBar.add(new HumanInferenceToolbarButton());
+        toolBar.add(new NeopostToolbarButton());
         toolBar.add(WidgetFactory.createToolBarSeparator());
         toolBar.add(testButton);
         toolBar.add(Box.createHorizontalStrut(4));

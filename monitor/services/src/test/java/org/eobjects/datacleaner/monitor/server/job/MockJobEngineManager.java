@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -36,7 +36,7 @@ public class MockJobEngineManager extends SimpleJobEngineManager {
     }
 
     private static Collection<JobEngine<?>> createDefaultJobEngines() {
-        JobEngine<?> engine = new DataCleanerJobEngine(null, new SimpleDescriptorProvider(true));
+        JobEngine<?> engine = new DataCleanerJobEngine(null, new SimpleDescriptorProvider(true), null);
         ArrayList<JobEngine<?>> list = new ArrayList<JobEngine<?>>(1);
         list.add(engine);
         return list;

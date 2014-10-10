@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -65,7 +65,7 @@ public class ExportResultToHtmlActionListener implements ActionListener {
         final AnalysisResult analysisResult = _result.get();
         if (analysisResult == null) {
             WidgetUtils.showErrorMessage("Result not ready",
-                    "Please wait for the job to finish before saving the result", null);
+                    "Please wait for the job to finish before saving the result");
             return;
         }
 

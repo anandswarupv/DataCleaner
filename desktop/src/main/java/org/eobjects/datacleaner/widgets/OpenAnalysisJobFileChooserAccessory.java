@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -129,7 +129,7 @@ public class OpenAnalysisJobFileChooserAccessory extends DCPanel implements Prop
         openJobButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                OpenAnalysisJobActionListener openAnalysisJobActionListener = _openAnalysisJobActionListenerProvider
+                final OpenAnalysisJobActionListener openAnalysisJobActionListener = _openAnalysisJobActionListenerProvider
                         .get();
                 final Injector injector = openAnalysisJobActionListener.openAnalysisJob(_file);
                 final AnalysisJobBuilderWindow window = injector.getInstance(AnalysisJobBuilderWindow.class);

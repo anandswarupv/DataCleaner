@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -37,7 +37,6 @@ import org.eobjects.analyzer.result.renderer.SwingRenderingFormat;
 import org.eobjects.analyzer.util.ReflectionUtils;
 import org.eobjects.datacleaner.actions.SaveDataSetActionListener;
 import org.eobjects.datacleaner.panels.DCPanel;
-import org.eobjects.datacleaner.user.UsageLogger;
 import org.eobjects.datacleaner.user.UserPreferences;
 import org.eobjects.datacleaner.util.IconUtils;
 import org.eobjects.datacleaner.util.ImageManager;
@@ -176,9 +175,6 @@ public class AnnotatedRowsResultSwingRenderer extends AbstractRenderer<Annotated
 
     @Inject
     DatastoreCatalog datastoreCatalog;
-
-    @Inject
-    UsageLogger usageLogger;
 
     @Override
     public AnnotatedRowResultPanel render(final AnnotatedRowsResult result) {

@@ -8,7 +8,7 @@
 		<junit.version>4.11</junit.version>
 		<httpcomponents.version>4.2.5</httpcomponents.version>
 		<guava.version>17.0</guava.version>
-		<analyzerbeans.version>1.0-RC4</analyzerbeans.version>
+		<analyzerbeans.version>1.0</analyzerbeans.version>
 	</properties>
 	<parent>
 		<!-- Uses the OSS sonatype nexus repository for distribution -->
@@ -69,10 +69,6 @@
 			</modules>
 		</profile>
 	</profiles>
-	<organization>
-		<name>Human Inference</name>
-		<url>http://www.humaninference.com</url>
-	</organization>
 	<developers>
 		<developer>
 			<name>Kasper Sørensen</name>

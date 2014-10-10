@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -63,6 +63,9 @@ public class DefaultResultContext implements ResultContext {
                     inputStream = new ChangeAwareObjectInputStream(in);
                     return inputStream.readObject();
                 } catch (Exception e) {
+                    if (e instanceof RuntimeException) {
+                        throw (RuntimeException) e;
+                    }
                     throw new IllegalStateException(e);
                 } finally {
                     FileHelper.safeClose(inputStream);

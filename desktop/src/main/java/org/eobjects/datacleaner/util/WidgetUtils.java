@@ -1,6 +1,6 @@
 /**
  * DataCleaner (community edition)
- * Copyright (C) 2013 Human Inference
+ * Copyright (C) 2014 Neopost - Customer Information Management
  *
  * This copyrighted material is made available to anyone wishing to use, modify,
  * copy, or redistribute it subject to the terms and conditions of the GNU
@@ -54,6 +54,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.metamodel.util.FileHelper;
 import org.eobjects.analyzer.util.StringUtils;
 import org.eobjects.datacleaner.panels.DCPanel;
+import org.eobjects.datacleaner.windows.ErrorDialog;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.border.DropShadowBorder;
 import org.jdesktop.swingx.decorator.Highlighter;
@@ -106,7 +107,7 @@ public final class WidgetUtils {
     }
 
     public static final Font FONT_BANNER = FONT_UBUNTU_PLAIN.deriveFont(18f);
-    public static final Font FONT_HEADER1 = FONT_UBUNTU_PLAIN.deriveFont(15f);
+    public static final Font FONT_HEADER1 = FONT_UBUNTU_PLAIN.deriveFont(16f);
     public static final Font FONT_HEADER2 = FONT_UBUNTU_PLAIN.deriveFont(13f);
     public static final Font FONT_MONOSPACE = new FontUIResource("Monospaced", Font.PLAIN, 14);
     public static final Font FONT_NORMAL = FONT_OPENSANS_PLAIN.deriveFont(13f);
@@ -131,19 +132,19 @@ public final class WidgetUtils {
     public static final Color BG_COLOR_BRIGHTEST = ColorUIResource.WHITE;
 
     // #e1e1e1 (silver-ish)
-    public static final Color BG_COLOR_BRIGHT = new ColorUIResource(235, 235, 235);
+    public static final Color BG_COLOR_BRIGHT = new ColorUIResource(245, 245, 245);
 
     // slightly darker than BRIGHT
-    public static final Color BG_COLOR_LESS_BRIGHT = new ColorUIResource(220, 220, 220);
+    public static final Color BG_COLOR_LESS_BRIGHT = new ColorUIResource(230, 230, 230);
 
     // #a0a0a0
-    public static final Color BG_COLOR_MEDIUM = new ColorUIResource(160, 160, 160);
+    public static final Color BG_COLOR_MEDIUM = new ColorUIResource(130, 140, 150);
 
-    public static final Color BG_COLOR_LESS_DARK = new ColorUIResource(95, 95, 95);
+    public static final Color BG_COLOR_LESS_DARK = new ColorUIResource(85, 95, 100);
 
-    public static final Color BG_COLOR_DARK = new ColorUIResource(70, 70, 70);
+    public static final Color BG_COLOR_DARK = new ColorUIResource(53, 63, 72);
 
-    public static final Color BG_COLOR_DARKEST = new ColorUIResource(40, 40, 40);
+    public static final Color BG_COLOR_DARKEST = new ColorUIResource(37, 40, 45);
 
     // additional colors, only intended for special widget coloring such as
     // charts etc.
@@ -332,20 +333,35 @@ public final class WidgetUtils {
         container.add(component);
     }
 
+    public static void showErrorMessage(final String shortMessage, final String detailedMessage) {
+        final String finalDetailedMessage = detailedMessage == null ? "" : detailedMessage;
+        final String finalShortMessage = shortMessage == null ? "" : shortMessage;
+        final ErrorDialog dialog = new ErrorDialog(finalShortMessage, finalDetailedMessage);
+
+        dialog.setModal(true);
+        dialog.open();
+    }
+
     public static void showErrorMessage(final String shortMessage, final String detailedMessage,
             final Throwable exception) {
-        JXErrorPane.setDefaultLocale(Locale.ENGLISH);
-        final JXErrorPane errorPane = new JXErrorPane();
+        final Throwable presentedException = ErrorUtils.unwrapForPresentation(exception);
+        if (exception == null) {
+            showErrorMessage(shortMessage, detailedMessage);
+            return;
+        }
+
         final String finalDetailedMessage = detailedMessage == null ? "" : detailedMessage;
         final String finalShortMessage = shortMessage == null ? "" : shortMessage;
 
-        final Throwable presentedException = ErrorUtils.unwrapForPresentation(exception);
-
         final ErrorInfo info = new ErrorInfo(finalShortMessage, finalDetailedMessage, null, "error",
                 presentedException, ErrorLevel.SEVERE, null);
+        final JXErrorPane errorPane = new JXErrorPane();
         errorPane.setErrorInfo(info);
+
         final JDialog dialog = JXErrorPane.createDialog(null, errorPane);
+
         centerOnScreen(dialog);
+        JXErrorPane.setDefaultLocale(Locale.ENGLISH);
         dialog.setLocale(Locale.ENGLISH);
         dialog.setModal(true);
         dialog.setTitle(finalShortMessage);
