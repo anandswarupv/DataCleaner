@@ -3,11 +3,9 @@
 	<parent>
 		<groupId>org.eobjects.datacleaner</groupId>
 		<artifactId>DataCleaner-monitor</artifactId>
-		<version>3.7.1-SNAPSHOT</version>
+		<version>4.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>DataCleaner-monitor-widgets</artifactId>
-	<packaging>jar</packaging>
-	<name>DataCleaner - monitor reusable widgets</name>
 
 	<dependencies>
 		<!-- DataCleaner monitor services -->

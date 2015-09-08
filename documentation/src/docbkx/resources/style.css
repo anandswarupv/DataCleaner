@@ -44,6 +44,10 @@ a {
 	text-decoration: underline;
 }
 
+img {
+	max-width: 1000px;
+}
+
 ol,ul {
 	list-style: circle;
 	margin: 10px;
@@ -155,9 +159,12 @@ body>div {
 	text-decoration: underline !important;
 }
 
+.chapter .toc dd dl dd dl dt .section, .part .toc dd dl dd dl dt .section {
+	padding: 7px 20px 7px 60px;
+}
+
 .chapter .toc dd .section, .book .toc dd dd dd .section {
-	display: none;
-	visibility: hidden;
+	padding: 7px 20px 7px 60px;
 }
 
 .toc .section a {
@@ -267,12 +274,4 @@ pre.programlisting {
 .list-of-tables {
 	visibility: hidden;
 	display: none;
-}
-
-#disqus_thread {
-	margin-top: 80px;
-	width: 970px;
-	border-radius: 5px;
-	padding: 5px;
-	border: 2px solid #f5f5f5;
 }

@@ -4,11 +4,28 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sshwagon.version>2.6</sshwagon.version>
 		<javadoc.version>2.9.1</javadoc.version>
-		<slf4j.version>1.7.7</slf4j.version>
-		<junit.version>4.11</junit.version>
-		<httpcomponents.version>4.2.5</httpcomponents.version>
-		<guava.version>17.0</guava.version>
-		<analyzerbeans.version>1.0</analyzerbeans.version>
+		<scala.version>2.11.4</scala.version>
+		<slf4j.version>1.7.10</slf4j.version>
+		<junit.version>4.12</junit.version>
+		<hadoop.version>2.7.1</hadoop.version>
+		<spark.version>1.4.1</spark.version>
+		<easymock.version>3.4</easymock.version>
+		<httpcomponents.version>4.4.1</httpcomponents.version>
+		<guava.version>16.0.1</guava.version>
+		<curator.version>2.6.0</curator.version>
+		<metamodel.version>4.4.0-RC1</metamodel.version>
+		<metamodel.extras.version>4.3.1</metamodel.extras.version>
+		<gwt.version>2.7.0</gwt.version>
+		<spring.core.version>4.1.7.RELEASE</spring.core.version>
+		<spring.security.version>3.2.7.RELEASE</spring.security.version>
+		<quartz.version>2.1.7</quartz.version>
+		<freemarker.version>2.3.22</freemarker.version>
+		<icu4j.version>55.1</icu4j.version>
+		<jackson.version>2.4.6</jackson.version>
+		<javax.servlet.version>3.0.1</javax.servlet.version>
+		<javax.jsp.version>2.0</javax.jsp.version>
+		<javax.el.version>2.2.4</javax.el.version>
+		<javax.annotation.version>1.2</javax.annotation.version>
 	</properties>
 	<parent>
 		<!-- Uses the OSS sonatype nexus repository for distribution -->
@@ -17,17 +34,18 @@
 		<artifactId>oss-parent</artifactId>
 		<version>9</version>
 	</parent>
+
 	<groupId>org.eobjects.datacleaner</groupId>
 	<artifactId>DataCleaner</artifactId>
-	<version>3.7.1-SNAPSHOT</version>
+	<version>4.1-SNAPSHOT</version>
 	<name>DataCleaner parent</name>
 	<description>DataCleaner is the premier open source data quality solution. Use it to
 		discover, analyze, profile, diagnose and monitor the state of your data. DataCleaner works with
-		almost any kind of data, eg. CSV files, databases, Excel spreadsheets and more.</description>
+		almost any kind of data, eg. CSV files, databases, Excel spreadsheets, NoSQL databases and more.</description>
 	<url>http://datacleaner.org</url>
 	<packaging>pom</packaging>
 	<modules>
-		<module>core</module>
+		<module>engine</module>
 	</modules>
 	<profiles>
 		<profile>
@@ -37,10 +55,12 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
-				<module>core</module>
+				<module>api</module>
+				<module>testware</module>
+				<module>engine</module>
+				<module>components</module>
 				<module>desktop</module>
 				<module>monitor</module>
-				<module>extensions</module>
 				<module>documentation</module>
 			</modules>
 		</profile>
@@ -48,31 +68,115 @@
 			<!-- Quick profile for skipping certain optional build operations -->
 			<id>quick</id>
 			<modules>
-				<module>core</module>
+				<module>api</module>
+				<module>testware</module>
+				<module>engine</module>
+				<module>components</module>
 				<module>desktop</module>
 				<module>monitor</module>
-				<module>extensions</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>desktop</id>
 			<modules>
-				<module>core</module>
+				<module>api</module>
+				<module>testware</module>
+				<module>engine</module>
+				<module>components</module>
 				<module>desktop</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>monitor</id>
 			<modules>
-				<module>core</module>
+				<module>api</module>
+				<module>testware</module>
+				<module>engine</module>
+				<module>components</module>
 				<module>monitor</module>
 			</modules>
 		</profile>
+        <profile>
+            <id>code-coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.7.5.201505241946</version>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-check</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <rule implementation="org.jacoco.maven.RuleConfiguration">
+                                            <element>BUNDLE</element>
+                                            <limits>
+                                                <limit>
+                                                    <counter>INSTRUCTION</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.01</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>BRANCH</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.00</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>METHOD</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.00</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>LINE</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.00</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>COMPLEXITY</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.00</minimum>
+                                                </limit>
+                                            </limits>
+                                        </rule>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 	</profiles>
 	<developers>
 		<developer>
 			<name>Kasper Sørensen</name>
 			<email>i.am.kasper.sorensen@gmail.com</email>
+		</developer>
+		<developer>
+			<name>Dennis Du Krøger</name>
+		</developer>
+		<developer>
+			<name>Claudia Peşu</name>
+		</developer>
+		<developer>
+			<name>Tomasz Guziałek</name>
 		</developer>
 	</developers>
 	<contributors>
@@ -131,9 +235,13 @@
 		</contributor>
 	</contributors>
 	<issueManagement>
-		<system>trac</system>
-		<url>http://eobjects.org/trac</url>
+		<system>GitHub</system>
+		<url>https://github.com/datacleaner/DataCleaner/issues</url>
 	</issueManagement>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/datacleaner/DataCleaner</url>
+	</ciManagement>
 	<licenses>
 		<license>
 			<name>Lesser General Public License</name>
@@ -144,8 +252,8 @@
 		<url>https://github.com/datacleaner/DataCleaner</url>
 		<connection>scm:git:https://github.com/datacleaner/DataCleaner.git</connection>
 		<developerConnection>scm:git:https://github.com/datacleaner/DataCleaner.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<mailingLists>
 		<mailingList>
 			<name>DataCleaner-dev mailing list</name>
@@ -161,7 +269,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- Ensures java 6 compatibility -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
@@ -230,7 +337,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5</version><!--$NO-MVN-MAN-VER$-->
+				<version>2.5</version><!--$NO-MVN-MAN-VER$ -->
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<goals>deploy</goals>
@@ -261,7 +368,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.3.1</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -276,6 +382,8 @@
 										<exclude>com.google.collections:google-collections</exclude>
 										<exclude>javax.servlet:servlet-api:*:jar:compile</exclude>
 										<exclude>org.mortbay.jetty:servlet-api:*:*:compile</exclude>
+										<exclude>org.eclipse.jetty.aggregate:jetty-all:*:jar:compile</exclude>
+										<exclude>org.mortbay.jetty:jetty:*:jar:compile</exclude>
 										<exclude>org.codehaus.jackson</exclude>
 										<exclude>org.eobjects.metamodel</exclude>
 									</excludes>
@@ -352,6 +460,11 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.3.1</version>
+				</plugin>
+				<plugin>
 					<groupId>net.alchim31.maven</groupId>
 					<artifactId>scala-maven-plugin</artifactId>
 					<version>3.2.0</version>
@@ -397,6 +510,12 @@
 				</plugin>
 
 				<plugin>
+					<groupId>org.jvnet.jaxb2.maven2</groupId>
+					<artifactId>maven-jaxb2-plugin</artifactId>
+					<version>0.11.0</version>
+				</plugin>
+
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
 					<version>1.7</version>
@@ -439,13 +558,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${javadoc.version}</version>
-				<configuration>
-					<links>
-						<link>http://analyzerbeans.eobjects.org/apidocs/</link>
-						<link>http://metamodel.eobjects.org/apidocs/</link>
-						<link>http://sassyreader.eobjects.org/apidocs/</link>
-					</links>
-				</configuration>
 				<reportSets>
 					<reportSet>
 						<id>aggregate</id>
@@ -466,56 +578,130 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>Codehaus repository</id>
-			<url>http://repository.codehaus.org/</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencyManagement>
 		<dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+            </dependency>
 			<dependency>
-				<groupId>org.eobjects.analyzerbeans</groupId>
-				<artifactId>AnalyzerBeans-core</artifactId>
-				<version>${analyzerbeans.version}</version>
+				<groupId>org.apache.metamodel</groupId>
+				<artifactId>MetaModel-core</artifactId>
+				<version>${metamodel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.metamodel</groupId>
+				<artifactId>MetaModel-hadoop</artifactId>
+				<version>${metamodel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.metamodel</groupId>
+				<artifactId>MetaModel-full</artifactId>
+				<version>${metamodel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.metamodel</groupId>
+				<artifactId>MetaModel-csv</artifactId>
+				<version>${metamodel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.metamodel</groupId>
+				<artifactId>MetaModel-json</artifactId>
+				<version>${metamodel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.metamodel</groupId>
+				<artifactId>MetaModel-hbase</artifactId>
+				<version>${metamodel.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
+						<groupId>jdk.tools</groupId>
+						<artifactId>jdk.tools</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.eobjects.analyzerbeans</groupId>
-				<artifactId>AnalyzerBeans-cli</artifactId>
-				<version>${analyzerbeans.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.httpcomponents</groupId>
-						<artifactId>httpclient</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>org.eobjects.metamodel-extras</groupId>
+				<artifactId>MetaModel-extras-sas</artifactId>
+				<version>${metamodel.extras.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.eobjects.analyzerbeans</groupId>
-				<artifactId>AnalyzerBeans-h2</artifactId>
-				<version>${analyzerbeans.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>org.eobjects.metamodel-extras</groupId>
+				<artifactId>MetaModel-extras-dbase</artifactId>
+				<version>${metamodel.extras.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eobjects.metamodel-extras</groupId>
+				<artifactId>MetaModel-extras-access</artifactId>
+				<version>${metamodel.extras.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.inject</groupId>
+				<artifactId>javax.inject</artifactId>
+				<version>1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-common</artifactId>
+				<version>${hadoop.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-client</artifactId>
+				<version>${hadoop.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-auth</artifactId>
+				<version>${hadoop.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-yarn-common</artifactId>
+				<version>${hadoop.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-mapreduce-client-common</artifactId>
+				<version>${hadoop.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-mapreduce-client-core</artifactId>
+				<version>${hadoop.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-yarn-server-common</artifactId>
+				<version>${hadoop.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hadoop</groupId>
+				<artifactId>hadoop-yarn-server-resourcemanager</artifactId>
+				<version>${hadoop.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
@@ -549,7 +735,104 @@
 				<artifactId>httpmime</artifactId>
 				<version>${httpcomponents.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jsp-api</artifactId>
+				<version>${javax.jsp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.el</groupId>
+				<artifactId>javax.el-api</artifactId>
+				<version>${javax.el.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax.annotation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${javax.servlet.version}</version>
+			</dependency>
+			<dependency>
+				<artifactId>xml-apis</artifactId>
+				<groupId>xml-apis</groupId>
+				<version>1.4.01</version>
+			</dependency>
+			<!-- JDBC drivers -->
+			<dependency>
+				<groupId>net.sourceforge.jtds</groupId>
+				<artifactId>jtds</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.3-1102-jdbc4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>1.3.176</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.hive</groupId>
+				<artifactId>hive-jdbc</artifactId>
+				<version>1.2.1</version>
+				<exclusions>
+					<exclusion>
+						<groupId>jdk.tools</groupId>
+						<artifactId>jdk.tools</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.jackson</groupId>
+						<artifactId>jackson-jaxrs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.jackson</groupId>
+						<artifactId>jackson-core-asl</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.jackson</groupId>
+						<artifactId>jackson-mapper-asl</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.jackson</groupId>
+						<artifactId>jackson-xc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>jetty</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.eclipse.jetty.aggregate</groupId>
+						<artifactId>jetty-all</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.6</version>
+			</dependency>
 			<dependency>
 				<groupId>commons-pool</groupId>
 				<artifactId>commons-pool</artifactId>
@@ -564,6 +847,140 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.7</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-math</artifactId>
+				<version>2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-vfs2</artifactId>
+				<version>2.0</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-svnexe</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-client</artifactId>
+				<version>${curator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-framework</artifactId>
+				<version>${curator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-recipes</artifactId>
+				<version>${curator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-test</artifactId>
+				<version>${curator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.8.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.googlecode.gentyref</groupId>
+				<artifactId>gentyref</artifactId>
+				<version>1.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.ibm.icu</groupId>
+				<artifactId>icu4j</artifactId>
+				<version>${icu4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-library</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang.modules</groupId>
+				<artifactId>scala-xml_2.11</artifactId>
+				<version>1.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-reflect</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-compiler</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.scala-lang</groupId>
+				<artifactId>scala-actors</artifactId>
+				<version>${scala.version}</version>
+			</dependency>
+
+			<!-- HTTP client needed for VFS support of HTTP. Hopefully it will be
+				replaced by HTTP components (4.x) at some point. -->
+			<dependency>
+				<groupId>commons-httpclient</groupId>
+				<artifactId>commons-httpclient</artifactId>
+				<version>3.1</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.kohsuke</groupId>
+				<artifactId>asm5</artifactId>
+				<version>5.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.inject</groupId>
+				<artifactId>guice</artifactId>
+				<version>3.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${freemarker.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 
 			<!-- logging dependencies -->
@@ -586,6 +1003,57 @@
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.17</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+
+			<!-- Test dependencies -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>${easymock.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.scalatest</groupId>
+				<artifactId>scalatest_2.11</artifactId>
+				<version>2.2.0</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>scala-library</artifactId>
+						<groupId>org.scala-lang</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>scala-actors</artifactId>
+						<groupId>org.scala-lang</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>scala-reflect</artifactId>
+						<groupId>org.scala-lang</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.core.version}</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

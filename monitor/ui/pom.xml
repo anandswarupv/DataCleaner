@@ -3,18 +3,21 @@
 	<parent>
 		<groupId>org.eobjects.datacleaner</groupId>
 		<artifactId>DataCleaner-monitor</artifactId>
-		<version>3.7.1-SNAPSHOT</version>
+		<version>4.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>DataCleaner-monitor-ui</artifactId>
 	<packaging>war</packaging>
-	<name>DataCleaner - monitor UI</name>
 
 	<build>
-		<plugins>
+        <plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
 				<version>${gwt.version}</version>
+				<configuration>
+					<!-- GWT uses ASM v5 and we have v4 on classpath. This flag avoids the conflict during GWT compile -->
+					<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+				</configuration>
 				<executions>
 					<execution>
 						<!-- GWT plugin, used to compile JavaScript -->
@@ -106,7 +109,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 
@@ -130,6 +132,20 @@
 	</profiles>
 
 	<dependencies>
+		<!-- GWT -->
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.gflot</groupId>
+			<artifactId>gflot</artifactId>
+			<version>3.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+	
 		<!-- DataCleaner monitor dependencies -->
 		<dependency>
 			<groupId>org.eobjects.datacleaner</groupId>
@@ -142,40 +158,92 @@
 			<version>${project.version}</version>
 		</dependency>
 		
+		<!-- DataCleaner monitor extensions -->
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-completeness-analysis-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-copy-data-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-csv-datastore-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-excel-datastore-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-jdbc-datastore-wizards</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-pentaho-job-engine</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-quick-analysis-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-salesforce-datastore-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eobjects.datacleaner</groupId>
+			<artifactId>DataCleaner-monitor-sugarcrm-datastore-wizard</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- JDBC drivers -->
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-jdbc</artifactId>
+		</dependency>
+		
 		<!-- Logging -->
 		<dependency>
-		    <groupId>ch.qos.logback</groupId>
-		    <artifactId>logback-classic</artifactId>
-		</dependency>
-
-		<!-- GWT -->
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.gflot</groupId>
-			<artifactId>gflot</artifactId>
-			<version>3.0.0</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
 		</dependency>
 
 		<!-- JSF -->
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.faces</artifactId>
-			<version>2.1.9</version>
+			<version>2.2.11</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.faces</groupId>
 			<artifactId>javax.faces-api</artifactId>
-			<version>2.1</version>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.el</groupId>
 			<artifactId>javax.el-api</artifactId>
-			<version>2.2.4</version>
+			<version>2.2.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -188,14 +256,14 @@
 		<!-- Servlet+JSP dependencies -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.0</version>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.1</version>
 			<scope>provided</scope>
 		</dependency>
 

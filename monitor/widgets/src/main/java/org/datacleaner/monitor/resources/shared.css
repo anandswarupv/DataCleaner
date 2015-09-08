@@ -1,0 +1,475 @@
+/**
+ * DataCleaner (community edition)
+ * Copyright (C) 2014 Neopost - Customer Information Management
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ */
+/**
+ * Overrides of the "clean" theme for basic elements
+ */
+body,table td,select,button,input {
+	font-family: "Open Sans", sans-serif;
+}
+
+input,select,textarea {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+a {
+	color: #377FCF;
+}
+
+a:hover {
+	color: #377FCF;
+	cursor: pointer;
+}
+
+/*
+ * GWT built-in style modifications 
+ */
+.gwt-TextBox,.gwt-ListBox {
+	padding: 5px 4px;
+	border: 1px solid #CCC;
+	border-top: 1px solid #999;
+	font-size: 0.9em;
+	font-family: "Open Sans", sans-serif;
+}
+
+.gwt-TextBox {
+	min-width: 200px;
+}
+
+.gwt-ListBox {
+	min-width: 210px;
+}
+
+.gwt-CheckBox label {
+	padding-left: 4px;
+}
+
+.gwt-PopupPanel .popupContent {
+	text-align: left;
+	padding: 5px;
+}
+
+.gwt-SuggestBoxPopup {
+	background-color: white;
+}
+
+.gwt-SuggestBoxPopup .suggestPopupContent {
+	text-align: left;
+}
+
+.gwt-Button {
+	margin: 5px;
+}
+
+.gwt-Button-ImageTextButton {
+	background-repeat: no-repeat;
+	background-position: 4px center;
+	background-image: none;
+	min-width: 30px;
+	height: 26px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 28px;
+	padding-right: 3px;
+	background-color: #f1f1f1;
+	font-size: 0.9em;
+}
+
+.gwt-Button-ImageButton {
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-image: none;
+	width: 30px;
+	height: 30px;
+	background-color: #f1f1f1;
+}
+
+.gwt-Button-ImageButton[disabled] {
+	filter: url(filters.svg#grayscale); /* Firefox 3.5+ */
+	filter: gray; /* IE6-9 */
+	-webkit-filter: grayscale(1); /* Google Chrome & Webkit Nightlies */
+}
+
+.gwt-Frame {
+	border: none;
+}
+
+.gwt-PopupPanelGlass {
+	position: fixed !important;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+
+/*
+ * General purpose style modifiers
+ */
+.DCPopupPanel {
+	max-width: 80%;
+}
+ 
+.DCPopupPanelContent {
+}
+
+.HeadingLabel {
+	font-family: "Ubuntu", sans-serif;
+	color: #377FCF;
+	font-size: 1.2em;
+	margin-bottom: 10px;
+}
+
+.DropDownAnchor {
+	background-image: url("dropdown_options_normal.png");
+	background-position: right center;
+	background-repeat: no-repeat;
+	padding-right: 16px;
+}
+
+.DropDownAnchor:hover {
+	background-image: url("dropdown_options_hover.png");
+}
+
+.ButtonPanel {
+	text-align: center;
+	padding: 10px;
+}
+
+.NewJobButton {
+	background-image: url("new.png");
+}
+
+.NewDatastoreButton {
+	background-image: url("new.png");
+}
+
+.FormRow {
+	clear: left;
+}
+
+.FormRow .FormKey {
+	float: left;
+	width: 200px;
+}
+
+.FormRow .FormValue {
+	float: left;
+}
+
+.FormRow .gwt-Button {
+	float: right;
+}
+
+th.center, td.center {
+	text-align: center;
+}
+
+div.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/**
+ * Styling for the wizards
+ */
+.PopupWizardPanel .DCPopupPanelContent {
+	min-height: 300px;
+	min-width: 500px;
+	max-width: 700px;
+}
+
+.WizardPanel table {
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+	border-spacing: 0px;
+	background-color: #f0f0f0;
+	border: 1px solid #ddd;
+}
+
+.WizardPanel table th {
+	background-color: #5594DD;
+	color: white;
+	font-weight: normal;
+	padding: 4px;
+}
+
+.WizardPanel table td {
+	padding: 2px;
+}
+
+.WizardPanel .gwt-RadioButton {
+	display: block;
+	margin: 6px;
+	margin-left: 20px;
+}
+
+.WizardPanel .gwt-RadioButton label {
+	padding-left: 6px;
+	color: #5594DD;
+}
+
+.WizardPanel .NameLabel {
+	margin-top: 20px;
+}
+
+.WizardPanel .NameTextBox {
+	margin: 20px;
+	margin-top: 5px;
+}
+
+.WizardPanel .HeadingLabel {
+	padding-left: 26px;
+	background-repeat: no-repeat;
+	background-position: left center;
+	min-height: 22px;
+}
+
+.JobWizardPanel .HeadingLabel {
+	background-image: url("job.png");
+}
+
+.DatastoreWizardPanel .HeadingLabel {
+	background-image: url("datastore.png");
+}
+
+.WizardFinishedPanel .gwt-Anchor {
+	margin: 10px;
+	display: block;
+	background-repeat: no-repeat;
+	padding-left: 28px;
+	line-height: 22px;
+}
+.WizardFinishedPanel .gwt-Anchor.QueryDatastore {
+	background-image: url("query.png");
+}
+.WizardFinishedPanel .gwt-Anchor.BuildJob {
+	background-image: url("job.png");
+}
+.WizardFinishedPanel .gwt-Anchor.TriggerJob {
+	background-image: url("trigger.png");
+}
+.WizardFinishedPanel .gwt-Anchor.MonitorJob {
+	background-image: url("timeline.png");
+}
+.WizardFinishedPanel .gwt-Anchor.ScheduleJob {
+	background-image: url("trigger_type_periodic.png");
+}
+
+.WizardFinishedPanel .gwt-Label {
+	margin-top: 10px;
+	display: block;
+	padding-left: 10px;
+}
+
+/**
+ * Styling for wizard progress bar
+ */
+.WizardProgressBar {
+	padding-left: 26px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 10px;
+}
+
+.WizardProgressBar .WizardProgressItem {
+	background-color: #333;
+	border-radius: 15px;
+	color: white;
+	float: left;
+	margin-right: 10px;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 11px;
+}
+.WizardProgressBar .WizardProgressItem.current {
+	background-color: #5594DD;
+}
+.WizardProgressBar .MetaItem.before {
+}
+.WizardProgressBar .MetaItem.more {
+	background-color: #333;
+	border-radius: 15px;
+	color: white;
+	float: left;
+	margin-right: 10px;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 10px;
+}
+.WizardProgressBar .MetaItem.after {
+	clear: both;
+}
+
+/**
+ * Styling for Schema tree
+ */
+.SchemaTree .gwt-TreeItem {
+	margin-left: 20px;
+}
+ 
+.SchemaTree .datastoreItem {
+	background-image: url("datastore.png");
+	background-repeat: no-repeat;
+	background-position: 20px top;
+}
+
+.SchemaTree .schemaItem {
+	background-image: url("schema.png");
+	background-repeat: no-repeat;
+	background-position: 20px 5px;
+}
+
+.SchemaTree .tableItem {
+	background-image: url("table.png");
+	background-repeat: no-repeat;
+	background-position: 20px 5px;
+}
+
+.SchemaTree .columnItem {
+	background-image: url("column.png");
+	background-repeat: no-repeat;
+	background-position: 20px 5px;
+}
+
+/**
+ * Styling for metric definition and selection
+ */
+.DefineMetricPanel {
+	width: 400px;
+	min-height: 350px;
+}
+
+.DefineMetricPanel .FormulaCheckBox {
+	
+}
+
+.DefineMetricPanel .FormulaTextBox {
+	display: block;
+	background-image: url("formula.png");
+	background-repeat: no-repeat;
+	background-position: 4px center;
+	padding-left: 30px;
+}
+
+.DefineMetricPanel .AddMetricButton {
+	background-image: url("add.png");
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 28px;
+	height: 24px;
+	float: right;
+}
+
+.DefineMetricPanel .RemoveMetricButton {
+	background-image: url("remove.png");
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 28px;
+	height: 24px;
+	clear: right;
+	float: right;
+}
+
+.SelectMetricPanel {
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #fdfdfd;
+	border: 1px solid #f0f0f0;
+	width: 300px;
+}
+
+.SelectMetricPanel .DisplayNameBox {
+	color: #5594DD;
+}
+
+.SelectMetricPanel select {
+	width: 300px;
+}
+
+.loader {
+	width: 100%;
+	min-width: 32px;
+	background: url("loader.gif") no-repeat center center;
+	height: 32px;
+}
+
+.ExecutionStatusPanel .loader {
+	width: 100%;
+	min-width: 128px;
+	background: url("job_loader.gif") no-repeat center center;
+	height: 128px;
+	margin-top: 40px;
+	margin-bottom: 40px;
+}
+
+.ButtonPanel .gwt-Button {
+	color: #fff;
+	background-color:#f0ad4e;
+	border-color: #eea236;
+	display: inline-block;
+	margin-bottom: 0;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+	background-image: none;
+	border: 1px solid transparent;
+	white-space: nowrap;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	border-radius: 4px;
+	height:auto;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.ButtonPanel .gwt-Button-ImageButton {
+	height: 30px !important;
+}
+
+.ButtonPanel .gwt-Button:disabled, .ButtonPanel .gwt-Button:disabled, .ButtonPanel .gwt-Button:hover:disabled {
+	background-color: #ddd;
+	cursor: default;
+	border: 1px solid #bbb;
+}
+
+.ButtonPanel .gwt-Button:hover {
+	background-color:#ff9600;
+	border-color: #eea236;
+}
+
+.alert {
+	padding: 15px;
+	margin-bottom: 20px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+}
+
+.alert-information {
+	background-color: #d9edf7;
+	border-color: #bce8f1;
+	color: #31708f;
+}
